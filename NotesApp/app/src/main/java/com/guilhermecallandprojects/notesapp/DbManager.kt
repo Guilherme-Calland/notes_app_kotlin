@@ -12,16 +12,12 @@ import java.nio.ByteOrder
 
 class DbManager(context: Context) {
 
-    val dbName = "notesDB"
+    val dbName = "notesDB_"
     val dbTable = "notes"
     val colID = "id"
     val colTitle = "title"
     val colDes = "description"
     val dbVersion = 1
-    val sqlCreateTable = "CREATE TABLE IF NOT EXISTS $dbTable (" +
-            "$colID INTEGER PRIMARY KEY," +
-            "$colTitle TEXT," +
-            "$colDes TEXT );"
 
     var sqlDB : SQLiteDatabase ?= null
 

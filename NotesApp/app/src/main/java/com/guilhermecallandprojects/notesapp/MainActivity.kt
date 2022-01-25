@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -21,43 +22,14 @@ import kotlinx.android.synthetic.main.ticket.view.*
 class MainActivity : AppCompatActivity() {
 
     var listNotes = ArrayList<Note>()
+    var myNotesAdapter: MyNotesAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        listNotes.add(
-            Note(
-                1, " in the end", "It starts with one\n" +
-                        "All I know\n" +
-                        "It's so unreal\n" +
-                        "Watch you go\n" +
-                        "I tried so hard and got so far\n" +
-                        "But in the end, it doesn't even matter\n" +
-                        "I had to fall to lose it all\n" +
-                        "But in the end, it doesn't even matter"
-            )
-        )
 
-        listNotes.add(
-            Note(
-                2, noteName = "it doesn't even matter", noteDes = "One thing, I don't know why\n" +
-                        "It doesn't even matter how hard you try\n" +
-                        "Keep that in mind, I designed this rhyme\n" +
-                        "To remind myself of a time when I tried so hard\n" +
-                        "In spite of the way you were mockin' me"
-            )
-        )
-
-        listNotes.add(
-            Note(noteID = 3, noteName = "I put my trust in you", noteDes = "Actin' like I was part of your property\n" +
-                    "Remembering all the times you fought with me\n" +
-                    "I'm surprised it got so far\n" +
-                    "Things aren't the way they were before\n" +
-                    "You wouldn't even recognize me anymore")
-        )
-
-        var myNotesAdapter = MyNotesAdapter(this, listNotes)
+        myNotesAdapter = MyNotesAdapter(this, listNotes)
         lv_notes.adapter = myNotesAdapter
 
         //load from database
@@ -65,13 +37,15 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    companion object{
-
+    override fun onResume(){
+        Log.i("app", "onResume")
+        loadQuery("%")
+        myNotesAdapter!!.notifyDataSetChanged()
+        super.onResume()
     }
 
-    @SuppressLint("Range")
     fun loadQuery(title: String){
-        var dbManager =DbManager(this)
+        val dbManager =DbManager(this)
         val projection = arrayOf("id", "title", "description")
         val selectionArgs = arrayOf(title)
         val cursor = dbManager.Query(projection, "title like ?", selectionArgs, "title")
@@ -101,6 +75,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 loadQuery("%")
+                myNotesAdapter!!.notifyDataSetChanged()
                 return false
             }
         })
@@ -120,7 +95,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     inner class MyNotesAdapter(var context: Context, var listNotesAdapter: ArrayList<Note>) : BaseAdapter() {
-
         override fun getCount(): Int {
             return listNotesAdapter.size
         }
@@ -143,7 +117,9 @@ class MainActivity : AppCompatActivity() {
                 val selectionArgs = arrayOf(myNote.noteID.toString())
                 dbManager.Delete("id=?", selectionArgs);
                 loadQuery("%")
+                notifyDataSetChanged()
             })
+
             return myView
         }
     }
