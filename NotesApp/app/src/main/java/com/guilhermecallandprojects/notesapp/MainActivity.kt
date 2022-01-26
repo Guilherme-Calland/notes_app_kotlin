@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume(){
         Log.i("app", "onResume")
         loadQuery("%")
-        myNotesAdapter!!.notifyDataSetChanged()
         super.onResume()
     }
 
@@ -58,6 +57,7 @@ class MainActivity : AppCompatActivity() {
                 listNotes.add(Note(id, title, description))
             }while(cursor.moveToNext())
         }
+        myNotesAdapter!!.notifyDataSetChanged()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?) : Boolean {
@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 loadQuery("%")
-                myNotesAdapter!!.notifyDataSetChanged()
                 return false
             }
         })
@@ -117,7 +116,6 @@ class MainActivity : AppCompatActivity() {
                 val selectionArgs = arrayOf(myNote.noteID.toString())
                 dbManager.Delete("id=?", selectionArgs);
                 loadQuery("%")
-                notifyDataSetChanged()
             })
 
             return myView
