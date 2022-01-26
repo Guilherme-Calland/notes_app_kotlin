@@ -118,7 +118,19 @@ class MainActivity : AppCompatActivity() {
                 loadQuery("%")
             })
 
+            myView.iv_edit.setOnClickListener {
+                gotoUpdate(myNote)
+            }
+
             return myView
         }
+    }
+
+    private fun gotoUpdate(note: Note) {
+        var intent = Intent(this, AddNotes::class.java)
+        intent.putExtra("id", note.noteID)
+        intent.putExtra("name", note.noteName)
+        intent.putExtra("des", note.noteDes)
+        startActivity(intent)
     }
 }
